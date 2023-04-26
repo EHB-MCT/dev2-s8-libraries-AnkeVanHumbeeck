@@ -6,17 +6,24 @@
 const app = {
 	map: null, // gebruik dit om de map gemakkelijk aan te spreken doorheen de applicatie
 	init() {
-		var map = L.map("map").setView([50.8453167, 4.357572], 10);
+		var map = L.map("map").setView([50.8453167, 4.357572], 13);
 		// initialise de kaart
 		// voeg een tile layer toe, met URL https://a.tile.openstreetmap.org/{z}/{x}/{y}.png
 		L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-			maxZoom: 19,
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 		}).addTo(map);
 		// vergeet openstreetmap attributie niet
 		// gebruik de functie "loadMarkers" om de markers toe te voegen
-		var marker = L.marker([50.8422095, 4.3228863]).addTo(map);
-		marker.bindPopup("<b>Erasmushogeschool campus Kaai</b><br>Study options: MCT, IT, musical").openPopup();
+		L.marker([50.842239, 4.322808]).addTo(map).bindPopup("<strong>Erasmushogeschool campus Kaai</strong><br><em> MCT, TI, Musical</em>").openPopup();
+		fetch("https://opendata.brussels.be/api/records/1.0/search/?dataset=toiletten&q=&rows=100&geofilter.distance=50.846475%2C+4.352793%2C+5000")
+			.then((response) => response.json())
+			.then(function (data) {
+				console.log(data);
+				data.records.forEach((element) => {
+					console.log(element);
+					L.marker([element.geometry.coordinates[1], element.geometry.coordinates[0]]).addTo(map).bindPopup(`${element.fields.adrvoisnl}`).openPopup();
+				});
+			});
 	},
 	loadMarkers() {
 		// fetch de data van opendata.brussels.be
@@ -24,7 +31,6 @@ const app = {
 	},
 	addMarker(lat, lon) {
 		// voeg een marker toe op lat, lon
-		var marker = L.marker([lat, lon]).addTo(map);
 	},
 };
 
